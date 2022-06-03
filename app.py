@@ -29,7 +29,7 @@ def disconnect_db(conn,cursor):
         conn.rollback()
         conn.close()
         
-def post_options()
+def post_options():
     try:
         (conn,cursor) = connect_db()
         print("You are now connected!")
@@ -64,14 +64,18 @@ def insert_username():
         (conn,cursor) = connect_db()
         username = input("Enter your username: ")
         cursor.execute("INSERT INTO blog_post(username) VALUES(?)", [username])
+        while True:
+            try:    
+                if(cursor.rowcount == 1):
+                    conn.commit()
+                    print("username entered successfully")
+                else:
+                    raise InputError
+            except InputError:
+                print("Invalid input, please try again")
+            else:
+                break
         post_options()
-        cursor.execute("INSERT INTO blog_post(content) VALUES(?)", [newpost])
-        
-        if(cursor.rowcount == 1):
-            conn.commit()
-            print("username entered successfully")
-        else:
-            print("unable to save username")
     except mariadb.OperationalError as e:
         print("Got an operational error")
         if ("Access Denied" in e.msg):
